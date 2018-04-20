@@ -1,0 +1,80 @@
+{# ------------------------------------------------------- #}
+{# INDIVIDUAL VIEW FOR EACH module #}
+{# This page can use any data from http:localhost:2000/cms/#/form/module/ #}
+{# Webhook uses the SWIG.js (like Djagno/Twig) templating system. Their documentation is here: #}
+{# http://paularmstrong.github.io/swig/docs/tags/ #}
+{# Learn about calling data into Webhook pages here: #}
+{# http://www.webhook.com/docs/template-rules-and-filters/ #}
+{# ------------------------------------------------------- #}
+{# Confused what extends and blocks do? Watch a primer: #}
+{# http://www.webhook.com/docs/template-inheritance-blocks/ #}
+{% extends "templates/partials/base.html" %}
+{# This sets our page <title>. It will append this module's name to the site title defined in base.html #}
+{% set lesson_count = 1 %}
+{% set subject = "物理" %}
+{% set subject_eng = "phy" %}
+{% block module_title %}{{ item.module_name }}{% endblock %}
+{% block module_description %}{{ item.description|safe }}{% endblock %}
+{% block content %}
+    {% for relation in item.relationship %}
+      {# You can ouput more than just the name. Feel free to output more fields from the CMS. #}
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+             <div class="title">
+              第 {{ lesson_count }} 課
+              <i class="spliter">
+              </i>
+              {{ relation.lesson_name|striptags }}
+              <a href="">
+               <div class="btn btn-test">
+                診斷式評估
+               </div>
+              </a>
+             </div>
+             <p>
+              {{ relation.description|safe }}
+             </p>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+             <table class="lesson-index">
+              <thead>
+               <tr>
+                <th>
+                 學生應學習
+                </th>
+                <th>
+                 學生應能
+                </th>
+               </tr>
+              </thead>
+              <tbody>
+                {# Relationship - Lesson with Section(s) #}
+                {% set section_count = 1 %}
+                {% for s_relation in relation.section_relationship %}
+                  <tr>
+                    <td>
+                     <a href="{{ url(s_relation) }}">
+                      第 {{ section_count }} 節
+                      <i class="spliter">
+                      </i>
+                      {{ s_relation.section_name|striptags }}
+                     </a>
+                    </td>
+                    <td>
+                     <ul>
+                      <li>
+                       {{ s_relation.learning_objective|safe }}
+                      </li>
+                     </ul>
+                    </td>
+                   </tr>
+                  {% set section_count+=1 %}
+                {% endfor %}
+              </tbody>
+             </table>
+            </div>
+        </div>
+      {% set lesson_count+=1 %}
+      {% if not loop.last %}{% endif %}
+    {% endfor %}
+{% endblock %}
